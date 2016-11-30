@@ -37,15 +37,15 @@ class TopicStatistic:
         self.ref_topic = ref_topic
         self.buffer_length = buffer_length
 
+        rospy.loginfo("statistics for \"{}\", using \"{}\" as reference".format(
+            self.dst_topic, "ros.Time.now()" if not self.ref_topic else self.ref_topic))
+
         self.subscribe_topic(dst_topic, self.dst_topic_callback)
         if self.ref_topic:
             self.subscribe_topic(ref_topic, self.ref_topic_callback)
 
         self.buffer = []
         self.ref_msg = None
-
-        rospy.loginfo("statistics for \"{}\", using \"{}\" as reference".format(
-            self.dst_topic, "ros.Time.now()" if not self.ref_topic else self.ref_topic))
 
     def dst_topic_callback(self, msg):
         try:
@@ -76,7 +76,10 @@ class TopicStatistic:
 
     def subscribe_topic(self, topic, callback):
         msg_class, _, _ = rostopic.get_topic_class(topic)
-        rospy.Subscriber(topic, msg_class, callback)
+        try:
+            rospy.Subscriber(topic, msg_class, callback)
+        except ValueError:
+            raise Exception("topic \"{}\" is not found".format(topic))
 
     def process(self):
         start_idx = 0
@@ -112,7 +115,7 @@ class TopicStatistic:
 def main(args):
     rospy.init_node('enhanced_rostopic_statistic')
     if not args.window:
-        args.window = "10"
+        args.window = 10
 
     ts = TopicStatistic(rospy.Duration(args.window), dst_topic=args.TOPIC, ref_topic=args.ref)
 
@@ -124,7 +127,8 @@ def main(args):
 if __name__ == '__main__':
     try:
         parser = argparse.ArgumentParser(
-            description=u"Enhanced rostopic statistics.")
+            description=u"Enhanced rostopic statistics.\n"
+                        u"Example: rosrun my_ros_tools enhanced-rostopic-statistic.py /visual_odometry/odom --ref /autopilot/imu")
         parser.add_argument("TOPIC", help=u"topic name for statistic")
         parser.add_argument(
             "-r", "--ref", help=u"topic name for reference. If not pass this argument, ros.Time.now will be used.")

@@ -145,7 +145,7 @@ class Application:
         button_bar = urwid.GridFlow(
             [urwid.AttrWrap(btn, 'buttn', 'buttnf')
              for (key, btn) in buttons.iteritems()], 18, 3, 1, 'left')
-        status_bar = urwid.AttrWrap(urwid.Text(u"status bar"), 'footer')
+        status_bar = urwid.AttrWrap(urwid.Text(u""), 'footer')
         footer = urwid.Pile([button_bar, status_bar])
 
         self.listwalker = urwid.SimpleListWalker(self.create_listbox_from_ros())
@@ -175,11 +175,7 @@ class Application:
 
         self.show_msg = status_bar.set_text
 
-        # use appropriate Screen class
-        if urwid.web_display.is_web_request():
-            screen = urwid.web_display.Screen()
-        else:
-            screen = urwid.raw_display.Screen()
+        screen = urwid.raw_display.Screen()
 
         self.mainloop = urwid.MainLoop(self.frame, palette, screen,
                                        unhandled_input=self.unhandled, pop_ups=True)
@@ -220,7 +216,8 @@ class Application:
         elif key == 'f5':
             self.do_refresh()
         else:
-            self.show_msg("Pressed: {}".format(key))
+            # self.show_msg("Pressed: {}".format(key))
+            pass
 
     # functional functions
     def get_listbox_chkboxes(self):
