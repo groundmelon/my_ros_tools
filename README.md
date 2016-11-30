@@ -20,6 +20,7 @@ Advanced features:
 
 Screenshot:
 
+![](doc/rosbag-record-param-generator-screenshot.png)
 
 ### enhanced-rostopic-statistic
 
@@ -32,4 +33,5 @@ Usage:
 
 Screenshot:
 
+![](doc/enhanced-rostopic-statistic-screenshot.png)
 
